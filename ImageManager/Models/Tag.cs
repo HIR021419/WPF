@@ -9,8 +9,8 @@ namespace ImageManager.Models
     class Tag
     {
         public int Id { get; set; }
-        public string Value { get; set; }
+        public string Value { get; set; } = null!;
         public int PhotoId { get; set; }
-        public Image Photo { get; set; }
+        public Image Photo { get; set; } = null!;
     }
 }

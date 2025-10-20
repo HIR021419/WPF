@@ -17,47 +17,44 @@ namespace ImageManager.Views
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
-        public ObservableCollection<dynamic> Items { get; } = new();
+        // public ObservableCollection<Image> Items { get; } = new();
 
         public MainWindow() : base()
         {
-            InitializeComponent();
+            // this.InitializeComponent();
             _db = new ImageDbContext();
             _svc = new ImageService(_db);
-            ThumbnailsControl.ItemsSource = Items;
+            // ThumbnailsControl.ItemsSource = Items;
         }
-
-        /*
+        
         private void OnImportClick(object sender, RoutedEventArgs e)
         {
-            var dlg = new System.Windows.Forms.FolderBrowserDialog();
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                var photos = _svc.LoadFromDirectory(dlg.SelectedPath).ToList();
-                _svc.SaveImages(photos);
-                Items.Clear();
-                foreach (var p in photos)
-                {
-                    Items.Add(new
-                    {
-                        Model = p,
-                        Thumbnail = ImageHelper.LoadThumbnail(p.Path, 300)
-                    });
-                }
-            }
+            // TODO
         }
 
         private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ClickCount == 2 && ((FrameworkElement)e.OriginalSource).DataContext is dynamic ctx)
-            {
-                var photo = (Image) ctx.Model;
-                var win = new ImageDetail(photo.Path);
-                win.ShowDialog();
-            }
+            // TODO
         }
 
-        // TODO : tri, filtre et diaporama
-        */
+        private void onSortClicked(object sender, RoutedEventArgs e)
+        {
+            // TODO : tri
+        }
+
+        private void onFilterSelected(object sender, RoutedEventArgs e)
+        {
+            // TODO : filtre
+        }
+
+        private void onTagManagementClicked(object sender, RoutedEventArgs e)
+        {
+            // TODO : gestion des tags
+        }
+
+        private void onDiaporamaClicked(object sender, RoutedEventArgs e)
+        {
+            // TODO : diaporama
+        }
     }
 }
