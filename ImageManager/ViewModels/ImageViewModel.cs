@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace ImageManager.ViewModels
 {
-    class ImageViewModel
+    public class ImageViewModel
     {
         public ObservableCollection<Image> Photos { get; } = new();
         public ICommand LoadCommand { get; }

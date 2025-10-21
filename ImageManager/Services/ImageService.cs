@@ -1,69 +1,108 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using ImageManager.Data;
 using ImageManager.Models;
-using ImageManager.Data;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using System.IO;
 
 namespace ImageManager.Services
 {
-    class ImageService(ImageDbContext db)
+    public class ImageService(ImageDbContext db)
     {
         public IEnumerable<Image> LoadFromDirectory(string dir)
         {
             var exts = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
-            var files = System.IO.Directory.EnumerateFiles(dir, "*.*", SearchOption.TopDirectoryOnly)
-                                 .Where(f => exts.Contains(Path.GetExtension(f).ToLower()));
+            DirectoryInfo d = new(dir);
+            var files = d.GetFiles("*", SearchOption.TopDirectoryOnly)
+                .Where(f => exts.Contains(f.Extension.ToLower()));
+
             var list = new List<Image>();
-            foreach (var f in files)
+
+            foreach (FileInfo file in files)
             {
-                var info = new FileInfo(f);
                 var img = new Image
                 {
-                    Path = f,
-                    FileName = info.Name,
-                    Size = info.Length,
-                    DateTaken = GetDateTaken(f) ?? info.LastWriteTime
+                    Path = file.FullName,
+                    FileName = file.Name,
+                    Date = file.LastWriteTime
                 };
-                var gps = GetGps(f);
-                if (gps != null) { img.Latitude = gps.Value.lat; img.Longitude = gps.Value.lon; }
+
+                if (db.Images.Any(i => i.Path == img.Path)) continue;
+
+                try
+                {
+                    var directories = ImageMetadataReader.ReadMetadata(file.OpenRead());
+
+                    var subIfd = directories.OfType<ExifSubIfdDirectory>().FirstOrDefault();
+                    var ifd0 = directories.OfType<ExifIfd0Directory>().FirstOrDefault();
+                    var gps = directories.OfType<GpsDirectory>().FirstOrDefault();
+
+                    if (subIfd != null)
+                    {
+                        img.Date = subIfd.GetDateTime(ExifDirectoryBase.TagDateTimeOriginal);
+                        img.ISO = subIfd.GetInt32(ExifDirectoryBase.TagIsoEquivalent);
+                        img.FocalLength = (int?)subIfd.GetRational(ExifDirectoryBase.TagFocalLength).ToDouble();
+                        img.FocalNumber = subIfd.GetRational(ExifDirectoryBase.TagFNumber).ToDouble();
+                        img.Exposure = subIfd.GetDescription(ExifDirectoryBase.TagExposureTime);
+                        img.Camera = subIfd.GetDescription(ExifDirectoryBase.TagModel);
+                        img.LensModel = subIfd.GetDescription(ExifDirectoryBase.TagLensModel);
+                    }
+
+                    if (ifd0 != null)
+                    {
+                        img.EditingSoftware = ifd0.GetDescription(ExifDirectoryBase.TagSoftware);
+                        img.Photographer = ifd0.GetDescription(ExifDirectoryBase.TagArtist);
+                        img.Title = ifd0.GetDescription(ExifDirectoryBase.TagImageDescription) ?? file.Name;
+                        img.Copyright = ifd0.GetDescription(ExifDirectoryBase.TagCopyright);
+                    }
+
+                    if (gps != null)
+                    {
+                        var success = gps.TryGetGeoLocation(out GeoLocation location);
+                        if (success)
+                        {
+                            img.Latitude = location.Latitude;
+                            img.Longitude = location.Longitude;
+                        }
+                    }
+                }
+                catch
+                {
+                    // On ignore les erreurs de lecture des métadonnées
+                }
+
                 list.Add(img);
             }
+
+            db.AddRange(list);
+            db.SaveChanges();
+
             return list;
         }
 
-        static DateTime? GetDateTaken(string path)
+        public IEnumerable<Image> LoadFromDatabase()
         {
-            try
-            {
-                var dirs = ImageMetadataReader.ReadMetadata(path);
-                var subIfd = dirs.OfType<ExifSubIfdDirectory>().FirstOrDefault();
-                if (subIfd != null && subIfd.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out DateTime dt))
-                    return dt;
-            }
-            catch { }
-            return null;
-        }
+            var images = db.Images.Include(i => i.Tags).ToList();
+            var toRemove = new List<Image>();
 
-        static (double lat, double lon)? GetGps(string path)
-        {
-            try
+            foreach (var img in images)
             {
-                var dirs = ImageMetadataReader.ReadMetadata(path);
-                var gps = dirs.OfType<GpsDirectory>().FirstOrDefault();
-                if (gps != null && gps.TryGetGeoLocation(out var loc))
-                    return (loc.Latitude, loc.Longitude);
+                if (!File.Exists(img.Path)) toRemove.Add(img);
             }
-            catch { }
-            return null;
+
+            if (toRemove.Any())
+            {
+                db.Images.RemoveRange(toRemove);
+                db.SaveChanges();
+            }
+
+            return images.Except(toRemove).ToList();
         }
 
         public void SaveImages(IEnumerable<Image> images)
         {
-            db.Images.AddRange(images);
+            db.Images.UpdateRange(images);
             db.SaveChanges();
         }
     }

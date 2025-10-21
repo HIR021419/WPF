@@ -1,23 +1,35 @@
-﻿using MetadataExtractor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ImageManager.Models
+﻿namespace ImageManager.Models
 {
-    class Image
+    public class Image
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Path { get; set; } = null!;
         public string FileName { get; set; } = null!;
-        public DateTime DateTaken { get; set; }
-        public long Size { get; set; }
-        public string MimeType { get; set; } = null!;
-        public double? Latitude { get; set; }     // GPS optional
-        public double? Longitude { get; set; }
-        public bool Archived { get; set; }
         public virtual List<Tag> Tags { get; set; } = new();
+
+        // Identification
+        public string? Title { get; set; } = null!;
+        public string? Subject { get; set; }
+        public string? Description { get; set; }
+        public DateTime? Date { get; set; }
+
+        // Informations techniques
+        public string? Camera { get; set; }
+        public string? LensModel { get; set; }
+        public string? Exposure { get; set; }
+        public int? ISO { get; set; }
+        public int? FocalLength { get; set; }
+        public double? FocalNumber { get; set; }
+        public string? EditingSoftware { get; set; }
+
+        // Auteur et droits
+        public string? Photographer { get; set; }
+        public string? Copyright { get; set; }
+        public string? License { get; set; }
+
+        // Localisation
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public string? Country { get; set; }
     }
 }

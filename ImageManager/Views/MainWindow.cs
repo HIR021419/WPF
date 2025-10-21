@@ -1,35 +1,39 @@
 ﻿using ImageManager.Data;
-using ImageManager.Helpers;
 using ImageManager.Models;
 using ImageManager.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace ImageManager.Views
 {
-    partial class MainWindow : Window
+    public partial class MainWindow : Window
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
-        // public ObservableCollection<Image> Items { get; } = new();
+        public ObservableCollection<Image> Items { get; set; } = null!;
 
         public MainWindow() : base()
         {
-            // this.InitializeComponent();
+            this.InitializeComponent();
             _db = new ImageDbContext();
             _svc = new ImageService(_db);
-            // ThumbnailsControl.ItemsSource = Items;
+            Loaded += OnLoaded;
         }
-        
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _db.Database.EnsureCreated();
+            Items = new(_svc.LoadFromDatabase());
+            ThumbnailsControl.ItemsSource = Items;
+        }
+
         private void OnImportClick(object sender, RoutedEventArgs e)
         {
-            // TODO
+            var dlg = new OpenFolderDialog();
+            if (dlg.ShowDialog() != true) return;
+            foreach (var img in _svc.LoadFromDirectory(dlg.FolderName)) Items.Add(img);
         }
 
         private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)

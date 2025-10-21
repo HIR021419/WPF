@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ImageManager.Models
+﻿namespace ImageManager.Models
 {
-    class Tag
+    public class Tag
     {
-        public int Id { get; set; }
-        public string Value { get; set; } = null!;
-        public int PhotoId { get; set; }
-        public Image Photo { get; set; } = null!;
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid ValueId { get; set; }
+        public TagValue Value { get; set; } = null!;
+        public Guid ImageId { get; set; }
+        public Image Image { get; set; } = null!;
     }
 }
