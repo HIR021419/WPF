@@ -43,5 +43,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+        <Button Name="BtnRotate" Content="Rotate" Height="30" Margin="6" DockPanel.Dock="Bottom" Click="OnRotateClick"/>
     </DockPanel>
 </Window>

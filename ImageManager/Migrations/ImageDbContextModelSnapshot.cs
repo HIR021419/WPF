@@ -76,6 +76,9 @@ namespace ImageManager.Migrations
                     b.Property<string>("Photographer")
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("Rotation")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("Subject")
                         .HasColumnType("TEXT");
 

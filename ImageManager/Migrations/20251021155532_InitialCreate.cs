@@ -18,6 +18,7 @@ namespace ImageManager.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Path = table.Column<string>(type: "TEXT", nullable: false),
                     FileName = table.Column<string>(type: "TEXT", nullable: false),
+                    Rotation = table.Column<double>(type: "REAL", nullable: false),
                     Title = table.Column<string>(type: "TEXT", nullable: true),
                     Subject = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),

@@ -3,25 +3,27 @@ using ImageManager.Models;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats;
 
 namespace ImageManager.Services
 {
     public class ImageService(ImageDbContext db)
     {
-        public IEnumerable<Image> LoadFromDirectory(string dir)
+        public IEnumerable<Models.Image> LoadFromDirectory(string dir)
         {
             var exts = new[] { ".jpg", ".jpeg", ".png", ".bmp" };
             DirectoryInfo d = new(dir);
             var files = d.GetFiles("*", SearchOption.TopDirectoryOnly)
                 .Where(f => exts.Contains(f.Extension.ToLower()));
 
-            var list = new List<Image>();
+            var list = new List<Models.Image>();
 
             foreach (FileInfo file in files)
             {
-                var img = new Image
+                var img = new Models.Image
                 {
                     Path = file.FullName,
                     FileName = file.Name,
@@ -81,10 +83,10 @@ namespace ImageManager.Services
             return list;
         }
 
-        public IEnumerable<Image> LoadFromDatabase()
+        public IEnumerable<Models.Image> LoadFromDatabase()
         {
             var images = db.Images.Include(i => i.Tags).ToList();
-            var toRemove = new List<Image>();
+            var toRemove = new List<Models.Image>();
 
             foreach (var img in images)
             {
@@ -100,10 +102,35 @@ namespace ImageManager.Services
             return images.Except(toRemove).ToList();
         }
 
-        public void SaveImages(IEnumerable<Image> images)
+        public void SaveImages(IEnumerable<Models.Image> images)
         {
             db.Images.UpdateRange(images);
             db.SaveChanges();
+        }
+
+        public bool RotateImage(Models.Image image, int degrees = 90)
+        {
+            if (!File.Exists(image.Path))
+                return false;
+
+            try
+            {
+                using (var img = SixLabors.ImageSharp.Image.Load(image.Path))
+                {
+                    img.Mutate(x => x.Rotate(degrees));
+                    img.Save(image.Path);
+                }
+
+                image.Rotation = (image.Rotation + degrees) % 360;
+                db.Images.Update(image);
+                db.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error rotating {image.Path}: {ex.Message}");
+                return false;
+            }
         }
     }
 }

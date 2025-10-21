@@ -12,6 +12,7 @@ namespace ImageManager.Views
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
+        private Models.Image? _selectedImage = null;
         public ObservableCollection<Models.Image> Items { get; set; } = null!;
 
         public MainWindow() : base()
@@ -36,15 +37,25 @@ namespace ImageManager.Views
             foreach (var img in _svc.LoadFromDirectory(dlg.FolderName)) Items.Add(img);
         }
 
+        private void OnRotateClick(object sender, RoutedEventArgs e)
+        {
+            if (_selectedImage == null) return;
+
+            _svc.RotateImage(_selectedImage);
+        }
+
         private void OnThumbnailClick(object sender, MouseButtonEventArgs e)
         {
+            if (sender is not Button btn || btn.DataContext is not Models.Image img) return;
+            _selectedImage = img;
             // TODO
         }
 
         private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is Models.Image img)
-                new ImageViewer(Items.ToList(), img).ShowDialog();
+            if (sender is not Button btn || btn.DataContext is not Models.Image img) return;
+            _selectedImage = img;
+            new ImageViewer(Items.ToList(), img).ShowDialog();
         }
 
         private void onSortClicked(object sender, RoutedEventArgs e)

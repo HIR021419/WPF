@@ -6,6 +6,7 @@
         public string Path { get; set; } = null!;
         public string FileName { get; set; } = null!;
         public virtual List<Tag> Tags { get; set; } = new();
+        public double Rotation { get; set; } = 0.0;
 
         // Identification
         public string? Title { get; set; } = null!;

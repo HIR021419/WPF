@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ImageManager.Migrations
 {
     [DbContext(typeof(ImageDbContext))]
-    [Migration("20251021005127_InitialCreate")]
+    [Migration("20251021155532_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -78,6 +78,9 @@ namespace ImageManager.Migrations
 
                     b.Property<string>("Photographer")
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Rotation")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("Subject")
                         .HasColumnType("TEXT");
