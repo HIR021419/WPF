@@ -1,10 +1,10 @@
 ﻿using ImageManager.Data;
-using ImageManager.Models;
 using ImageManager.Services;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Win32;
 
 namespace ImageManager.Views
 {
@@ -12,7 +12,7 @@ namespace ImageManager.Views
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
-        public ObservableCollection<Image> Items { get; set; } = null!;
+        public ObservableCollection<Models.Image> Items { get; set; } = null!;
 
         public MainWindow() : base()
         {
@@ -36,9 +36,15 @@ namespace ImageManager.Views
             foreach (var img in _svc.LoadFromDirectory(dlg.FolderName)) Items.Add(img);
         }
 
-        private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)
+        private void OnThumbnailClick(object sender, MouseButtonEventArgs e)
         {
             // TODO
+        }
+
+        private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is Models.Image img)
+                new ImageViewer(img).ShowDialog();
         }
 
         private void onSortClicked(object sender, RoutedEventArgs e)

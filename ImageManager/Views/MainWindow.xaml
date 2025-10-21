@@ -33,9 +33,11 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Padding="2">
-                            <Image Width="180" Height="120" Stretch="UniformToFill"
-                                   Source="{Binding Path, Converter={StaticResource ImageConverter}}"
-                                   MouseLeftButtonDown="OnThumbnailDoubleClick"/>
+                            <Button MouseDoubleClick="OnThumbnailDoubleClick"
+                                    MouseLeftButtonDown="OnThumbnailClick">
+                                <Image Width="180" Height="120" Stretch="UniformToFill"
+                                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
+                            </Button>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
