@@ -12,7 +12,7 @@
 
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="6">
-            <Button Name="BtnImport" Content="Importer des images" Width="150" Margin="0,0,10,0" Click="OnImportClick"/>
+            <Button Name="BtnImport" Content="Importer des images" Width="150" Margin="0,0,10,0"/>
             <TextBox x:Name="SearchBox" Width="200" Margin="6,0"/>
             <ComboBox x:Name="SortCombo" Width="150" Margin="6,0">
                 <ComboBoxItem Content="Name"/>
@@ -23,26 +23,31 @@
         </StackPanel>
 
         <ScrollViewer>
-            <ItemsControl x:Name="ThumbnailsControl">
-                <ItemsControl.ItemsPanel>
+            <ListBox x:Name="ThumbnailsControl"
+         ItemsSource="{Binding Items}"
+         SelectedItem="{Binding SelectedImage, Mode=TwoWay}">
+                <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel IsItemsHost="True" />
                     </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+                </ListBox.ItemsPanel>
 
-                <ItemsControl.ItemTemplate>
+                <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Padding="2">
-                            <Button MouseDoubleClick="OnThumbnailDoubleClick"
-                                    MouseLeftButtonDown="OnThumbnailClick">
-                                <Image Width="180" Height="120" Stretch="UniformToFill"
-                                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
-                            </Button>
+                            <Image Width="180" Height="120"
+                       Stretch="UniformToFill"
+                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </ScrollViewer>
-        <Button Name="BtnRotate" Content="Rotate" Height="30" Margin="6" DockPanel.Dock="Bottom" Click="OnRotateClick"/>
+        <Button Content="Rotate"
+        Height="30"
+        Margin="6"
+        DockPanel.Dock="Bottom"
+        Command="{Binding RotateCommand}"
+        IsEnabled="{Binding SelectedImage, Converter={StaticResource NullToBoolConverter}}"/>
     </DockPanel>
 </Window>

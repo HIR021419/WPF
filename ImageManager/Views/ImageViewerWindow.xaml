@@ -7,9 +7,7 @@
         Title="Image Viewer"
         WindowState="Maximized"
         WindowStyle="None"
-        Background="Black"
-        KeyDown="Window_KeyDown"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        Background="Black">
     <Window.Resources>
         <local:ImageConverter x:Key="ImageConverter"/>
     </Window.Resources>
@@ -27,7 +25,6 @@
                 Height="40"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
-                Margin="20"
-                Click="SlideshowButton_Click"/>
+                Margin="20"/>
     </Grid>
 </Window>

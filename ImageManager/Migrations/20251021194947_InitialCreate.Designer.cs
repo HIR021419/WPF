@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ImageManager.Migrations
 {
     [DbContext(typeof(ImageDbContext))]
-    [Migration("20251021155532_InitialCreate")]
+    [Migration("20251021194947_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

@@ -1,29 +1,36 @@
 ﻿using ImageManager.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
-namespace ImageManager.Views
+namespace ImageManager.ViewModels
 {
-    public partial class ImageViewer : Window
+    internal class ImageViewerViewModel : BaseViewModel
     {
         private readonly List<Image> _images;
         private int _currentIndex;
         private Timer? _slideshowTimer;
         private bool _isPlaying = false;
 
-        public ImageViewer(List<Image> images, Image current)
+        public ImageViewerViewModel()
         {
-            InitializeComponent();
+            //InitializeComponent();
 
-            _images = images;
-            _currentIndex = _images.FindIndex(i => i.Path == current.Path);
-            DataContext = _images[_currentIndex];
+            _images = new();
+            _currentIndex = 0;
+            //_currentIndex = _images.FindIndex(i => i.Path == current.Path);
+            //DataContext = _images[_currentIndex];
         }
 
         private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             StopSlideshow();
-            Close();
+            //Close();
         }
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -31,7 +38,7 @@ namespace ImageManager.Views
             if (e.Key == System.Windows.Input.Key.Escape)
             {
                 StopSlideshow();
-                Close();
+                //Close();
             }
         }
 
@@ -46,14 +53,14 @@ namespace ImageManager.Views
         private void StartSlideshow()
         {
             _isPlaying = true;
-            SlideshowButton.Content = "⏸️";
-            _slideshowTimer = new Timer((s) => Dispatcher.Invoke(NextImage), null, 0, 3000);
+            //SlideshowButton.Content = "⏸️";
+            //_slideshowTimer = new Timer((s) => Dispatcher.Invoke(NextImage), null, 0, 3000);
         }
 
         private void StopSlideshow()
         {
             _isPlaying = false;
-            SlideshowButton.Content = "▶️";
+            //SlideshowButton.Content = "▶️";
             _slideshowTimer?.Dispose();
             _slideshowTimer = null;
         }
@@ -74,21 +81,22 @@ namespace ImageManager.Views
             fadeOut.FillBehavior = FillBehavior.Stop;
             fadeOut.Completed += (s, e) =>
             {
+                /*
                 Dispatcher.Invoke(() =>
                 {
-                    DataContext = next;
-                    FullImage.Opacity = 0;
+                    //DataContext = next;
+                    //FullImage.Opacity = 0;
                     var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(350));
                     fadeIn.FillBehavior = FillBehavior.Stop;
                     fadeIn.Completed += (s2, e2) =>
                     {
-                        FullImage.Opacity = 1;
+                        //FullImage.Opacity = 1;
                     };
-                    FullImage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
-                });
+                    //FullImage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+                });*/
             };
 
-            FullImage.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+            //FullImage.BeginAnimation(UIElement.OpacityProperty, fadeOut);
         }
     }
 }

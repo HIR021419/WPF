@@ -1,33 +1,57 @@
 ﻿using ImageManager.Data;
 using ImageManager.Services;
+using ImageManager.Views;
 using Microsoft.Win32;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ImageManager.Views
+namespace ImageManager.ViewModels
 {
-    public partial class MainWindow : Window
+    internal class MainWindowViewModel : BaseViewModel
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
-        private Models.Image? _selectedImage = null;
+
+        private Models.Image? _selectedImage;
+        public Models.Image? SelectedImage
+        {
+            get => _selectedImage;
+            set
+            {
+                _selectedImage = value;
+                OnPropertyChanged(nameof(SelectedImage));
+            }
+        }
         public ObservableCollection<Models.Image> Items { get; set; } = null!;
 
-        public MainWindow() : base()
+        public ImageViewer imageViewer;
+        public ICommand RotateCommand { get; }
+
+        public MainWindowViewModel() : base()
         {
-            this.InitializeComponent();
+            //this.InitializeComponent();
             _db = new ImageDbContext();
             _svc = new ImageService(_db);
-            Loaded += OnLoaded;
+            //Loaded += OnLoaded;
+
+            imageViewer = new Views.ImageViewer();
+            ImageViewerViewModel imageViewerViemModel = new();
+            imageViewer.DataContext = imageViewerViemModel;
+            RotateCommand = new RelayCommand(OnRotateExecute, CanRotateExecute);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _db.Database.EnsureCreated();
             Items = new(_svc.LoadFromDatabase());
-            ThumbnailsControl.ItemsSource = Items;
+            //ThumbnailsControl.ItemsSource = Items;
         }
 
         private void OnImportClick(object sender, RoutedEventArgs e)
@@ -55,7 +79,7 @@ namespace ImageManager.Views
         {
             if (sender is not Button btn || btn.DataContext is not Models.Image img) return;
             _selectedImage = img;
-            new ImageViewer(Items.ToList(), img).ShowDialog();
+            //new ImageViewer(Items.ToList(), img).ShowDialog();
         }
 
         private void onSortClicked(object sender, RoutedEventArgs e)
@@ -78,6 +102,17 @@ namespace ImageManager.Views
         {
             Items.Clear();
             // TODO : filtre par tag
+        }
+
+        private void OnRotateExecute(object? parameter)
+        {
+            if (SelectedImage == null) return;
+            _svc.RotateImage(SelectedImage);
+        }
+
+        private bool CanRotateExecute(object? parameter)
+        {
+            return SelectedImage != null;
         }
     }
 }
