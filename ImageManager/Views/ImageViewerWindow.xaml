@@ -15,9 +15,19 @@
     </Window.Resources>
 
     <Grid>
-        <Image Source="{Binding Path, Converter={StaticResource ImageConverter}}"
+        <Image x:Name="FullImage"
+               Source="{Binding Path, Converter={StaticResource ImageConverter}}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
-               VerticalAlignment="Center"/>
+               VerticalAlignment="Center"
+               Opacity="1"/>
+        <Button x:Name="SlideshowButton"
+                Content="▶️"
+                Width="80"
+                Height="40"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="20"
+                Click="SlideshowButton_Click"/>
     </Grid>
 </Window>

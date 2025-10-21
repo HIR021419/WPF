@@ -44,7 +44,7 @@ namespace ImageManager.Views
         private void OnThumbnailDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is Models.Image img)
-                new ImageViewer(img).ShowDialog();
+                new ImageViewer(Items.ToList(), img).ShowDialog();
         }
 
         private void onSortClicked(object sender, RoutedEventArgs e)
@@ -52,8 +52,9 @@ namespace ImageManager.Views
             // TODO : tri
         }
 
-        private void onFilterSelected(object sender, RoutedEventArgs e)
+        private void onFilterChanged(object sender, RoutedEventArgs e)
         {
+            Items.Clear();
             // TODO : filtre
         }
 
@@ -62,9 +63,10 @@ namespace ImageManager.Views
             // TODO : gestion des tags
         }
 
-        private void onDiaporamaClicked(object sender, RoutedEventArgs e)
+        private void onTagFilterChanged(object sender, RoutedEventArgs e)
         {
-            // TODO : diaporama
+            Items.Clear();
+            // TODO : filtre par tag
         }
     }
 }
