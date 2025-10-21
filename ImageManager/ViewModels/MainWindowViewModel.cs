@@ -14,7 +14,7 @@ using System.Windows.Input;
 
 namespace ImageManager.ViewModels
 {
-    internal class MainWindowViewModel : BaseViewModel
+    public class MainWindowViewModel : BaseViewModel
     {
         private readonly ImageService _svc;
         private readonly ImageDbContext _db;
@@ -36,22 +36,16 @@ namespace ImageManager.ViewModels
 
         public MainWindowViewModel() : base()
         {
-            //this.InitializeComponent();
+            base.DisplayName = "ImageManager";
             _db = new ImageDbContext();
+            _db.Database.EnsureCreated();
             _svc = new ImageService(_db);
-            //Loaded += OnLoaded;
+            Items = new(_svc.LoadFromDatabase());
 
             imageViewer = new Views.ImageViewer();
             ImageViewerViewModel imageViewerViemModel = new();
             imageViewer.DataContext = imageViewerViemModel;
             RotateCommand = new RelayCommand(OnRotateExecute, CanRotateExecute);
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            _db.Database.EnsureCreated();
-            Items = new(_svc.LoadFromDatabase());
-            //ThumbnailsControl.ItemsSource = Items;
         }
 
         private void OnImportClick(object sender, RoutedEventArgs e)

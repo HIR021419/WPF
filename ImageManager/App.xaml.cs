@@ -18,6 +18,7 @@ namespace ImageManager
             Views.MainWindow mainWindow = new Views.MainWindow();
             ViewModels.MainWindowViewModel viewModel = new ViewModels.MainWindowViewModel();
             mainWindow.DataContext = viewModel;
+            mainWindow.InitializeComponent();
             mainWindow.Show();
         }
     }

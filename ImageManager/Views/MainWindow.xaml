@@ -4,8 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ImageManager.Converters"
-        mc:Ignorable="d"
-        Title="ImageManager" Height="700" Width="1000">
+        Title="ImageManager" Height="700" Width="1000" xmlns:Behaviours="clr-namespace:ImageManager">
     <Window.Resources>
         <local:ImageConverter x:Key="ImageConverter"/>
     </Window.Resources>
@@ -47,7 +46,6 @@
         Height="30"
         Margin="6"
         DockPanel.Dock="Bottom"
-        Command="{Binding RotateCommand}"
-        IsEnabled="{Binding SelectedImage, Converter={StaticResource NullToBoolConverter}}"/>
+        Command="{Binding RotateCommand}"/>
     </DockPanel>
 </Window>
