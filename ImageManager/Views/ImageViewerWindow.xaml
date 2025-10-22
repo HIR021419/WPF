@@ -7,24 +7,33 @@
         Title="Image Viewer"
         WindowState="Maximized"
         WindowStyle="None"
-        Background="Black">
+        Background="Black"
+        xmlns:Behaviours="clr-namespace:ImageManager">
     <Window.Resources>
         <local:ImageConverter x:Key="ImageConverter"/>
+        <Style x:Key="StyleMainGrid">
+            <Style.Triggers>
+                <DataTrigger  Binding="{Binding CloseSignal}" Value="true">
+                    <Setter Property="Behaviours:WindowCloseBehaviour.Close" Value="true"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
-    <Grid>
+    <Grid Style="{StaticResource StyleMainGrid}">
         <Image x:Name="FullImage"
-               Source="{Binding Path, Converter={StaticResource ImageConverter}}"
+               Source="{Binding CurrentImage.Path, Converter={StaticResource ImageConverter}}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Opacity="1"/>
         <Button x:Name="SlideshowButton"
-                Content="▶️"
+                Content="Exit"
                 Width="80"
                 Height="40"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
-                Margin="20"/>
+                Margin="20"
+                Command="{Binding ExitCommand}"/>
     </Grid>
 </Window>

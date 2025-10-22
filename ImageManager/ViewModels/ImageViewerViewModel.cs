@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
@@ -12,34 +13,62 @@ namespace ImageManager.ViewModels
 {
     internal class ImageViewerViewModel : BaseViewModel
     {
-        private readonly List<Image> _images;
+        #region variables
+        private readonly List<Models.Image> _images;
+        private bool _closeSignal = false;
         private int _currentIndex;
         private Timer? _slideshowTimer;
         private bool _isPlaying = false;
+        #endregion
 
-        public ImageViewerViewModel()
+        #region commands
+        public ICommand _exitCommand = null!;
+        #endregion
+
+        #region getter / setter
+        public bool CloseSignal
         {
-            //InitializeComponent();
-
-            _images = new();
-            _currentIndex = 0;
-            //_currentIndex = _images.FindIndex(i => i.Path == current.Path);
-            //DataContext = _images[_currentIndex];
+            get { return _closeSignal; }
+            set
+            {
+                if (_closeSignal != value)
+                {
+                    _closeSignal = value;
+                    OnPropertyChanged(nameof(CloseSignal));
+                }
+            }
         }
 
-        private void Window_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public Models.Image CurrentImage
+        {
+            get
+            {
+                if (_images != null && _images.Any() && _currentIndex >= 0 && _currentIndex < _images.Count)
+                    return _images[_currentIndex];
+                return null;
+            }
+        }
+
+        public ICommand ExitCommand
+        {
+            get { return _exitCommand; }
+            set { _exitCommand = value; }
+        }
+        #endregion
+
+        public ImageViewerViewModel(Image current, List<Image> images) : base()
+        {
+            base.DisplayName = "Image Viewer";
+            _images = images;
+            _currentIndex = _images.FindIndex(i => i.Path == current.Path);
+
+            ExitCommand = new RelayCommand(Close);
+        }
+
+        private void Close(object sender)
         {
             StopSlideshow();
-            //Close();
-        }
-
-        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Escape)
-            {
-                StopSlideshow();
-                //Close();
-            }
+            CloseSignal = true;
         }
 
         private void SlideshowButton_Click(object sender, RoutedEventArgs e)

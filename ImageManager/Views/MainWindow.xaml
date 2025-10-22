@@ -7,45 +7,58 @@
         Title="ImageManager" Height="700" Width="1000" xmlns:Behaviours="clr-namespace:ImageManager">
     <Window.Resources>
         <local:ImageConverter x:Key="ImageConverter"/>
+        <Style x:Key="StyleMainGrid">
+            <!--trigger pour fermer la fenêtre-->
+            <Style.Triggers>
+                <DataTrigger  Binding="{Binding CloseSignal}" Value="true">
+                    <Setter Property="Behaviours:WindowCloseBehaviour.Close" Value="true"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate x:Key="dtListImage">
+            <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Padding="2">
+                <Image Width="180" Height="120" Stretch="UniformToFill"
+                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
+            </Border>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="dtListImagePanel">
+            <WrapPanel IsItemsHost="True" />
+        </ItemsPanelTemplate>
     </Window.Resources>
 
-    <DockPanel>
+    <DockPanel Style="{StaticResource StyleMainGrid}">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="6">
-            <Button Name="BtnImport" Content="Importer des images" Width="150" Margin="0,0,10,0"/>
+            <Button Name="BtnImport" Content="Importer des images" Command="{Binding ImportCommand}"  Width="150" Margin="0,0,10,0"/>
             <TextBox x:Name="SearchBox" Width="200" Margin="6,0"/>
             <ComboBox x:Name="SortCombo" Width="150" Margin="6,0">
                 <ComboBoxItem Content="Name"/>
                 <ComboBoxItem Content="Date"/>
                 <ComboBoxItem Content="Size"/>
             </ComboBox>
-            <ToggleButton x:Name="AscToggle" Content="Asc" Margin="6,0"/>
+            <ToggleButton x:Name="AscToggle" Content="Asc" Command="{Binding SortCommand}" Margin="6,0"/>
         </StackPanel>
 
         <ScrollViewer>
             <ListBox x:Name="ThumbnailsControl"
-         ItemsSource="{Binding Items}"
-         SelectedItem="{Binding SelectedImage, Mode=TwoWay}">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True" />
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="4" BorderBrush="Gray" BorderThickness="1" Padding="2">
-                            <Image Width="180" Height="120"
-                       Stretch="UniformToFill"
-                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+                     ItemsSource="{Binding Images, UpdateSourceTrigger=PropertyChanged}"
+                     SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                     ItemTemplate="{StaticResource dtListImage}"
+                     ItemsPanel="{StaticResource dtListImagePanel}">
             </ListBox>
         </ScrollViewer>
+        <StackPanel Orientation="Vertical">
+        <Image Width="500" Height="500" Stretch="Uniform"
+            Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+            <Button Content="View Fullscreen"
+                    Height="30"
+                    Margin="6"
+                    DockPanel.Dock="Bottom"
+                    Command="{Binding ViewImageCommand}"/>
         <Button Content="Rotate"
         Height="30"
         Margin="6"
         DockPanel.Dock="Bottom"
         Command="{Binding RotateCommand}"/>
+        </StackPanel>
     </DockPanel>
 </Window>
