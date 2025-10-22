@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.DirectoryServices;
 using System.Linq;
 using System.Text;
@@ -221,6 +222,9 @@ namespace ImageManager.ViewModels
         {
             if (SelectedImage == null) return;
             _svc.RotateImage(SelectedImage);
+            OnPropertyChanged(nameof(SelectedImage));
+            OnPropertyChanged(nameof(Images));
+
         }
 
         private void onDeleteImageExecute(object obj)

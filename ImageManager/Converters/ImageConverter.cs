@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Cache;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
@@ -18,8 +19,11 @@ namespace ImageManager.Converters
 
             var bmp = new BitmapImage();
             bmp.BeginInit();
-            bmp.UriSource = new Uri(path, UriKind.Absolute);
+            bmp.CacheOption = BitmapCacheOption.None;
+            bmp.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
             bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+            bmp.UriSource = new Uri(path, UriKind.Absolute);
             bmp.EndInit();
             return bmp;
 

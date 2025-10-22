@@ -122,7 +122,8 @@
             <Border Margin="4" BorderBrush="#3C3C3C" BorderThickness="1" Padding="2" CornerRadius="4">
                 <Image Width="120" Height="120"
                        Stretch="UniformToFill"
-                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
+                       Source="{Binding Path, Converter={StaticResource ImageConverter}}">
+                </Image>
             </Border>
         </DataTemplate>
 
@@ -206,8 +207,12 @@
             <!-- Zone d’aperçu -->
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
                 <Image Width="480" Height="480" Stretch="Uniform"
-                       Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-
+       Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}">
+                    <!--<Image.RenderTransform>
+                        <RotateTransform Angle="{Binding SelectedImage.Rotation}" CenterX="0.5" CenterY="0.5" />
+                    </Image.RenderTransform>
+                    <Image.RenderTransformOrigin>0.5,0.5</Image.RenderTransformOrigin>-->
+                </Image>
                 <Button Content="View Fullscreen"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding ViewImageCommand}"/>
