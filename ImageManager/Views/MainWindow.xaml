@@ -43,7 +43,6 @@
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Height" Value="30"/>
-            <Setter Property="MinWidth" Value="100"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -149,9 +148,10 @@
                 <ComboBoxItem Content="Date"/>
                 <ComboBoxItem Content="Size"/>
             </ComboBox>
-            <ToggleButton x:Name="AscToggle" 
+            <Button x:Name="AscToggle" 
                           Content="{Binding SortDirectionText}"
-                          Command="{Binding SortCommand}"/>
+                          Command="{Binding SortCommand}"
+                          Style="{StaticResource PrimaryButtonStyle}" Width="60"/>
         </StackPanel>
 
         <!-- CONTENU PRINCIPAL -->
@@ -207,25 +207,32 @@
             </ListBox>
 
             <!-- Zone d’aperçu -->
-                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
+            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
                 <Image Width="480" Height="480" Stretch="Uniform"
-       Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}">
-                    <!--<Image.RenderTransform>
-                        <RotateTransform Angle="{Binding SelectedImage.Rotation}" CenterX="0.5" CenterY="0.5" />
-                    </Image.RenderTransform>
-                    <Image.RenderTransformOrigin>0.5,0.5</Image.RenderTransformOrigin>-->
-                </Image>
-                <Button Content="View Fullscreen"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Command="{Binding ViewImageCommand}"/>
+           Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
 
-                <Button Content="Rotate"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Command="{Binding RotateCommand}"/>
+                <!-- Ligne de boutons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <Button Content="View Fullscreen"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding ViewImageCommand}"
+                            Margin="4,0"
+                            Width="100"
+                            />
 
-                <Button Content="Delete"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Command="{Binding DeleteImageCommand}"/>
+                    <Button Content="Rotate"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding RotateCommand}"
+                            Margin="4,0"
+                            Width="100"/>
+
+                    <Button Content="Delete"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Command="{Binding DeleteImageCommand}"
+                            Margin="4,0"
+                             Width="100"
+                            />
+                </StackPanel>
             </StackPanel>
         </Grid>
     </DockPanel>
