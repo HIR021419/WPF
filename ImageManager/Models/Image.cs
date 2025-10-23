@@ -78,6 +78,7 @@ namespace ImageManager.Models
         public int? FocalLength { get; set; }
         public double? FocalNumber { get; set; }
         public string? EditingSoftware { get; set; }
+        public int? Size { get; set; }
 
         // Auteur et droits
         public string? Photographer { get; set; }

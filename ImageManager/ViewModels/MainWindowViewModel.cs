@@ -21,7 +21,11 @@ namespace ImageManager.ViewModels
         private ObservableCollection<Models.Image> _images = null!;
         private Models.Image? _selectedImage = null;
         private string _searchPattern = "";
+
+        private ObservableCollection<Models.Tag> _tages = null!;
         private string _selectedSortOption = "Name";
+        private string _selectedFilterOption = "All";
+
         ListSortDirection sortDirection = ListSortDirection.Ascending;
         private string _sortDirectionText = "Asc";
         private string _newTagText = "";
@@ -111,6 +115,32 @@ namespace ImageManager.ViewModels
                     _selectedSortOption = value;
                     OnPropertyChanged(nameof(SelectedSortOption));
                     ApplySort();
+                }
+            }
+        }
+        public string SelectedFilterOption
+        {
+            get => _selectedFilterOption;
+            set
+            {
+                if (_selectedFilterOption != value)
+                {
+                    _selectedFilterOption = value;
+                    OnPropertyChanged(nameof(SelectedFilterOption));
+                    ApplyFilter();
+                }
+            }
+        }
+
+        public ObservableCollection<Models.Tag> Tags
+        {
+            get { return _tages; }
+            set
+            {
+                if (_tages != value)
+                {
+                    _tages = value;
+                    OnPropertyChanged(nameof(Tags));
                 }
             }
         }
@@ -213,13 +243,34 @@ namespace ImageManager.ViewModels
                 case "Date":
                     ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
                     break;
-                case "Taille":
-                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
+                case "Size":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Size), sortDirection));
                     break;
             }
+        }
+
+        private void ApplyFilter()
+        {
+            ImagesView.Filter = null;
+            ImagesView.Filter = (item) =>
+            {
+                if (item is not Models.Image image)
+                    return false;
+
+                string extension = System.IO.Path.GetExtension(image.FileName)?.ToLower();
+                return SelectedFilterOption switch
+                {
+                    "All" => true,
+                    "Jpg" => extension == ".jpg" || extension == ".jpeg",
+                    "Png" => extension == ".png",
+                    "Bmp" => extension == ".bmp",
+                    _ => true
+                };
+            };
 
             ImagesView.Refresh();
         }
+
 
         private void OnImportExecute(object? parameter)
         {

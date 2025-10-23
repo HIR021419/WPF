@@ -148,6 +148,14 @@
                 <ComboBoxItem Content="Date"/>
                 <ComboBoxItem Content="Size"/>
             </ComboBox>
+            <ComboBox x:Name="FilterCombo" Style="{StaticResource SortComboStyle}"
+                      SelectedValuePath="Content"
+                      SelectedValue="{Binding SelectedFilterOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <ComboBoxItem Content="All"/>
+                <ComboBoxItem Content="Jpg"/>
+                <ComboBoxItem Content="Png"/>
+                <ComboBoxItem Content="Bmp"/>
+            </ComboBox>
             <Button x:Name="AscToggle" 
                           Content="{Binding SortDirectionText}"
                           Command="{Binding SortCommand}"
