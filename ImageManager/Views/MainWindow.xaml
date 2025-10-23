@@ -142,7 +142,8 @@
             <Button Content="Importer des images"
                     Command="{Binding ImportCommand}"
                     Style="{StaticResource PrimaryButtonStyle}" Width="150"/>
-            <ComboBox x:Name="SortCombo" Style="{StaticResource SortComboStyle}">
+            <ComboBox x:Name="SortCombo" Style="{StaticResource SortComboStyle}"
+                      SelectedItem="{Binding SelectedSortOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <ComboBoxItem Content="Name"/>
                 <ComboBoxItem Content="Date"/>
                 <ComboBoxItem Content="Size"/>
@@ -205,7 +206,7 @@
             </ListBox>
 
             <!-- Zone d’aperçu -->
-            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
                 <Image Width="480" Height="480" Stretch="Uniform"
        Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}">
                     <!--<Image.RenderTransform>
@@ -220,6 +221,10 @@
                 <Button Content="Rotate"
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding RotateCommand}"/>
+
+                <Button Content="Delete"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{Binding DeleteImageCommand}"/>
             </StackPanel>
         </Grid>
     </DockPanel>

@@ -108,6 +108,13 @@ namespace ImageManager.Services
             db.SaveChanges();
         }
 
+        public void DeleteImage(Models.Image image)
+        {
+            db.Images.Remove(image);
+            File.Delete(image.Path);
+            image.OnPropertyChanged(nameof(image.Path));
+        }
+
         public bool RotateImage(Models.Image image, int degrees = 90)
         {
             if (!File.Exists(image.Path))
@@ -124,6 +131,7 @@ namespace ImageManager.Services
                 image.Rotation = (image.Rotation + degrees) % 360;
                 db.Images.Update(image);
                 db.SaveChanges();
+                image.OnPropertyChanged(nameof(image.Path));
                 return true;
             }
             catch (Exception ex)

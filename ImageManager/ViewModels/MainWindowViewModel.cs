@@ -2,6 +2,7 @@
 using ImageManager.Services;
 using ImageManager.Views;
 using Microsoft.Win32;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,6 +27,7 @@ namespace ImageManager.ViewModels
         private Models.Image? _selectedImage = null;
         private string _searchPattern = "";
         private ObservableCollection<Models.Tag> _tages = null!;
+        private string _selectedSortOption= "";
         #endregion
 
         #region commands
@@ -89,6 +91,23 @@ namespace ImageManager.ViewModels
                 {
                     _images = value;
                     OnPropertyChanged(nameof(Images));
+                }
+            }
+        }
+
+        public string SelectedSortOption
+        {
+            get => _selectedSortOption;
+            set
+            {
+                if (_selectedSortOption != value)
+                {
+                    _selectedSortOption = value;
+                    OnPropertyChanged(nameof(SelectedSortOption));
+                    ApplySort();
+
+                    // TODO: Enlever cette horreur qui sert a refresh la mosaïque
+                    //Images = new ObservableCollection<Models.Image>(Images);
                 }
             }
         }
@@ -161,6 +180,8 @@ namespace ImageManager.ViewModels
         }
         #endregion
 
+        public ICollectionView ImagesView { get; }
+
         public MainWindowViewModel() : base()
         {
             base.DisplayName = "ImageManager";
@@ -179,6 +200,28 @@ namespace ImageManager.ViewModels
             AddTagCommand = new RelayCommand(onAddTagExecute, CanExecuteOnSelectedImage);
             RemoveTagCommand = new RelayCommand(onRemoveTagExecute, CanExecuteOnSelectedImage);
             SaveChangesCommand = new RelayCommand(onSaveChangesExecute);
+
+            ImagesView = CollectionViewSource.GetDefaultView(Images);
+        }
+
+        private void ApplySort()
+        {
+            ImagesView.SortDescriptions.Clear();
+
+            switch (SelectedSortOption)
+            {
+                case "Nom":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.FileName), ListSortDirection.Ascending));
+                    break;
+                case "Date":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), ListSortDirection.Descending));
+                    break;
+                case "Taille":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), ListSortDirection.Descending));
+                    break;
+            }
+
+            ImagesView.Refresh();
         }
 
         private void OnImportExecute(object? parameter)
@@ -224,12 +267,15 @@ namespace ImageManager.ViewModels
             _svc.RotateImage(SelectedImage);
             OnPropertyChanged(nameof(SelectedImage));
             OnPropertyChanged(nameof(Images));
-
         }
 
         private void onDeleteImageExecute(object obj)
         {
-            throw new NotImplementedException();
+            if (SelectedImage == null) return;
+            _svc.DeleteImage(SelectedImage);
+            Images.Remove(SelectedImage);
+            SelectedImage = null;
+            OnPropertyChanged(nameof(Images));
         }
 
         private void onAddTagExecute(object obj)
