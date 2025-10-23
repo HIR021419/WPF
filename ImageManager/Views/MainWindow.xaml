@@ -11,32 +11,30 @@
     <Window.Resources>
         <local:ImageConverter x:Key="ImageConverter"/>
 
-        <!-- Style principal de la fenêtre -->
+        <!-- Window -->
         <Style TargetType="Window" x:Key="MainWindowStyle">
-            <Setter Property="Background" Value="#1E1E1E"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
             <Setter Property="FontFamily" Value="Segoe UI"/>
             <Setter Property="FontSize" Value="14"/>
         </Style>
 
-        <!-- Style du DockPanel principal -->
+        <!-- Main DockPanel -->
         <Style x:Key="StyleMainGrid" TargetType="DockPanel">
             <Setter Property="Margin" Value="0"/>
             <Setter Property="LastChildFill" Value="True"/>
-            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
             <Style.Triggers>
-                <!-- Trigger pour fermer la fenêtre -->
                 <DataTrigger Binding="{Binding CloseSignal}" Value="true">
                     <Setter Property="Behaviours:WindowCloseBehaviour.Close" Value="true"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
-
-        <!-- Style des boutons -->
+        <!-- Primary Button -->
         <Style TargetType="Button" x:Key="PrimaryButtonStyle">
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBgBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonFgBrush}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Padding" Value="6,3"/>
@@ -46,8 +44,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" 
-                                CornerRadius="4">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
@@ -55,31 +52,31 @@
             </Setter>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2196F3"/>
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
                 </Trigger>
                 <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#005A9E"/>
+                    <Setter Property="Background" Value="{DynamicResource AccentBrushPressed}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!-- Style du TextBox -->
+        <!-- TextBox -->
         <Style TargetType="TextBox" x:Key="SearchBoxStyle">
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Padding" Value="4,2"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+            <Setter Property="Background" Value="{DynamicResource InputBgBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushBase}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Width" Value="200"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
                         <Border CornerRadius="6"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
                             <ScrollViewer x:Name="PART_ContentHost"/>
                         </Border>
                     </ControlTemplate>
@@ -87,55 +84,79 @@
             </Setter>
         </Style>
 
-        <!-- Style du ComboBox -->
+        <!-- ComboBox -->
         <Style TargetType="ComboBox" x:Key="SortComboStyle">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Margin" Value="6,0"/>
             <Setter Property="Width" Value="150"/>
-            <Setter Property="Background" Value="White"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+            <Setter Property="Background" Value="{DynamicResource InputBgBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushBase}"/>
             <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
-        <!-- Style du ToggleButton -->
-        <Style TargetType="ToggleButton" x:Key="AscToggleStyle" BasedOn="{StaticResource PrimaryButtonStyle}">
-            <Setter Property="Background" Value="#3A3D41"/>
-            <Setter Property="Foreground" Value="White"/>
+        <!-- ToggleButton (independent style) -->
+        <Style TargetType="ToggleButton" x:Key="AscToggleStyle">
+            <Setter Property="Background" Value="{DynamicResource ForegroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource BorderBrushBase}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="6,3"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentBrushPressed}"/>
+                </Trigger>
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Background" Value="#007ACC"/>
+                    <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!-- Style du ListBox -->
+        <!-- ListBox -->
         <Style TargetType="ListBox" x:Key="ThumbnailListBoxStyle">
-            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Margin" Value="8"/>
         </Style>
 
-        <!-- Style de l’image miniature -->
+        <!-- Thumbnail item -->
         <DataTemplate x:Key="dtListImage">
-            <Border Margin="4" BorderBrush="#3C3C3C" BorderThickness="1" Padding="2" CornerRadius="4">
+            <Border Margin="4"
+                    BorderBrush="{DynamicResource BorderBrushBase}"
+                    BorderThickness="1"
+                    Padding="2"
+                    CornerRadius="4">
                 <Image Width="120" Height="120"
                        Stretch="UniformToFill"
-                       Source="{Binding Path, Converter={StaticResource ImageConverter}}">
-                </Image>
+                       Source="{Binding Path, Converter={StaticResource ImageConverter}}"/>
             </Border>
         </DataTemplate>
 
-        <!-- Panel pour les miniatures -->
+        <!-- WrapPanel for thumbnails -->
         <ItemsPanelTemplate x:Key="dtListImagePanel">
             <WrapPanel IsItemsHost="True" />
         </ItemsPanelTemplate>
 
     </Window.Resources>
 
-    <!-- === STRUCTURE DE LA FENÊTRE === -->
+    <!-- LAYOUT -->
     <DockPanel Style="{StaticResource StyleMainGrid}">
-        <!-- BARRE SUPÉRIEURE -->
+        <!-- TOP BAR -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,10,10,0">
             <TextBox x:Name="SearchBox"
                      Style="{StaticResource SearchBoxStyle}"
@@ -166,29 +187,47 @@
                 <ComboBoxItem Content="Png"/>
                 <ComboBoxItem Content="Bmp"/>
             </ComboBox>
+
             <Button x:Name="AscToggle" 
-                          Content="{Binding SortDirectionText}"
-                          Command="{Binding SortCommand}"
-                          Style="{StaticResource PrimaryButtonStyle}" Width="60"/>
+                    Content="{Binding SortDirectionText}"
+                    Command="{Binding SortCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}" Width="60"/>
+
+            <!-- Theme toggle -->
+            <ToggleButton Width="60"
+                          Margin="6,0"
+                          IsChecked="{Binding IsDarkMode}"
+                          ToolTip="Toggle theme">
+                <ToggleButton.Style>
+                    <Style TargetType="ToggleButton" BasedOn="{StaticResource AscToggleStyle}">
+                        <Setter Property="Content" Value="☀️"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Content" Value="🌙"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+            </ToggleButton>
         </StackPanel>
 
-        <!-- CONTENU PRINCIPAL -->
+        <!-- MAIN -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <!-- Liste des miniatures -->
+            <!-- Thumbnails -->
             <ListBox x:Name="ThumbnailsControl"
-                 Grid.Column="0"
-                 Style="{StaticResource ThumbnailListBoxStyle}"
-                 ItemsSource="{Binding Images, UpdateSourceTrigger=PropertyChanged}"
-                 SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
-                 ItemTemplate="{StaticResource dtListImage}"
-                 ItemsPanel="{StaticResource dtListImagePanel}"
-                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                     Grid.Column="0"
+                     Style="{StaticResource ThumbnailListBoxStyle}"
+                     ItemsSource="{Binding Images, UpdateSourceTrigger=PropertyChanged}"
+                     SelectedItem="{Binding SelectedImage, Mode=TwoWay}"
+                     ItemTemplate="{StaticResource dtListImage}"
+                     ItemsPanel="{StaticResource dtListImagePanel}"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.Resources>
                     <Style TargetType="ScrollBar">
                         <Setter Property="Background" Value="#2A2A2A"/>
@@ -205,9 +244,7 @@
                                                 <Thumb>
                                                     <Thumb.Template>
                                                         <ControlTemplate TargetType="Thumb">
-                                                            <Border Background="White" 
-                                                CornerRadius="4"
-                                                BorderThickness="0"/>
+                                                            <Border Background="White" CornerRadius="4" BorderThickness="0"/>
                                                         </ControlTemplate>
                                                     </Thumb.Template>
                                                 </Thumb>
@@ -224,64 +261,59 @@
                 </ListBox.Resources>
             </ListBox>
 
-            <!-- Zone d’aperçu -->
+            <!-- Preview & tags -->
             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="6">
                 <Image Width="480" Height="480" Stretch="Uniform"
-           Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                       Source="{Binding SelectedImage.Path, Converter={StaticResource ImageConverter}, UpdateSourceTrigger=PropertyChanged}" />
 
-                <!-- Ligne de boutons -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                     <Button Content="View Fullscreen"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding ViewImageCommand}"
                             Margin="4,0"
-                            Width="100"
-                            />
-
+                            Width="100"/>
                     <Button Content="Rotate"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding RotateCommand}"
                             Margin="4,0"
                             Width="100"/>
-
                     <Button Content="Delete"
                             Style="{StaticResource PrimaryButtonStyle}"
                             Command="{Binding DeleteImageCommand}"
                             Margin="4,0"
-                             Width="100"
-                            />
+                            Width="100"/>
                 </StackPanel>
-                <!-- Tags -->
-                <Border Background="#2D2D30"
-        CornerRadius="6"
-        Padding="10"
-        Margin="10,20,10,0"
-        BorderThickness="1"
-        BorderBrush="#3C3C3C">
+
+                <!-- Tags panel -->
+                <Border Background="{DynamicResource CardBrush}"
+                        CornerRadius="6"
+                        Padding="10"
+                        Margin="10,20,10,0"
+                        BorderThickness="1"
+                        BorderBrush="{DynamicResource BorderBrushBase}">
                     <Border.Effect>
                         <DropShadowEffect Color="Black" Opacity="0.25" BlurRadius="10" ShadowDepth="2"/>
                     </Border.Effect>
 
                     <StackPanel>
                         <TextBlock Text="Tags"
-               FontWeight="SemiBold"
-               FontSize="14"
-               Foreground="White"
-               Margin="0,0,0,8"/>
+                                   FontWeight="SemiBold"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource ForegroundBrush}"
+                                   Margin="0,0,0,8"/>
 
                         <DockPanel LastChildFill="False">
                             <TextBox Width="200"
-               Margin="0,0,8,0"
-               Style="{StaticResource SearchBoxStyle}"
-               Background="#1E1E1E"
-               Foreground="White"
-               BorderBrush="#3C3C3C"
-               Text="{Binding NewTagText, UpdateSourceTrigger=PropertyChanged}"/>
-
+                                     Margin="0,0,8,0"
+                                     Style="{StaticResource SearchBoxStyle}"
+                                     Background="{DynamicResource InputBgBrush}"
+                                     Foreground="{DynamicResource ForegroundBrush}"
+                                     BorderBrush="{DynamicResource BorderBrushBase}"
+                                     Text="{Binding NewTagText, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Content="Add"
-              Command="{Binding AddTagCommand}"
-              Style="{StaticResource PrimaryButtonStyle}"
-              Width="60" Height="30"/>
+                                    Command="{Binding AddTagCommand}"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Width="60" Height="30"/>
                         </DockPanel>
 
                         <ItemsControl ItemsSource="{Binding SelectedImage.Tags}" Margin="0,10,0,0">
@@ -290,27 +322,26 @@
                                     <WrapPanel IsItemsHost="True"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
-
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Background="#3A3D41"
-                  CornerRadius="16"
-                  Margin="4,4,0,0"
-                  Padding="8,3"
-                  VerticalAlignment="Center">
+                                    <Border Background="{DynamicResource ChipBrush}"
+                                            CornerRadius="16"
+                                            Margin="4,4,0,0"
+                                            Padding="8,3"
+                                            VerticalAlignment="Center">
                                         <DockPanel LastChildFill="False">
                                             <TextBlock Text="{Binding Name}"
-                         Foreground="White"
-                         VerticalAlignment="Center"
-                         Margin="0,0,4,0"/>
+                                                       Foreground="{DynamicResource ForegroundBrush}"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,0,4,0"/>
                                             <Button Content="×"
-                      Width="20" Height="20"
-                      Background="Transparent"
-                      Foreground="#CCCCCC"
-                      BorderThickness="0"
-                      Cursor="Hand"
-                      Command="{Binding DataContext.RemoveTagCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                      CommandParameter="{Binding}">
+                                                    Width="20" Height="20"
+                                                    Background="Transparent"
+                                                    Foreground="#CCCCCC"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"
+                                                    Command="{Binding DataContext.RemoveTagCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}">
                                                 <Button.Style>
                                                     <Style TargetType="Button">
                                                         <Setter Property="Template">

@@ -29,6 +29,8 @@ namespace ImageManager.ViewModels
         ListSortDirection sortDirection = ListSortDirection.Ascending;
         private string _sortDirectionText = "Asc";
         private string _newTagText = "";
+
+        private bool _isDarkMode = true;
         #endregion
 
         #region commands
@@ -56,7 +58,19 @@ namespace ImageManager.ViewModels
                 }
             }
         }
-
+        public bool IsDarkMode
+        {
+            get => _isDarkMode;
+            set
+            {
+                if (_isDarkMode != value)
+                {
+                    _isDarkMode = value;
+                    OnPropertyChanged(nameof(IsDarkMode));
+                    ThemeManager.Apply(_isDarkMode);
+                }
+            }
+        }
         public Models.Image? SelectedImage
         {
             get => _selectedImage;
