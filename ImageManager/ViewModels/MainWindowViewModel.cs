@@ -27,7 +27,9 @@ namespace ImageManager.ViewModels
         private Models.Image? _selectedImage = null;
         private string _searchPattern = "";
         private ObservableCollection<Models.Tag> _tages = null!;
-        private string _selectedSortOption= "";
+        private string _selectedSortOption= "Name";
+        ListSortDirection sortDirection = ListSortDirection.Ascending;
+        private string _sortDirectionText = "Asc";
         #endregion
 
         #region commands
@@ -43,6 +45,18 @@ namespace ImageManager.ViewModels
         #endregion
 
         #region getter / setter
+        public string SortDirectionText
+        {
+            get => _sortDirectionText;
+            set
+            {
+                if (_sortDirectionText != value)
+                {
+                    _sortDirectionText = value;
+                    OnPropertyChanged(nameof(SortDirectionText));
+                }
+            }
+        }
         public Models.Image? SelectedImage
         {
             get => _selectedImage;
@@ -105,9 +119,6 @@ namespace ImageManager.ViewModels
                     _selectedSortOption = value;
                     OnPropertyChanged(nameof(SelectedSortOption));
                     ApplySort();
-
-                    // TODO: Enlever cette horreur qui sert a refresh la mosaïque
-                    //Images = new ObservableCollection<Models.Image>(Images);
                 }
             }
         }
@@ -202,6 +213,7 @@ namespace ImageManager.ViewModels
             SaveChangesCommand = new RelayCommand(onSaveChangesExecute);
 
             ImagesView = CollectionViewSource.GetDefaultView(Images);
+            ApplySort();
         }
 
         private void ApplySort()
@@ -210,14 +222,14 @@ namespace ImageManager.ViewModels
 
             switch (SelectedSortOption)
             {
-                case "Nom":
-                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.FileName), ListSortDirection.Ascending));
+                case "Name":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.FileName), sortDirection));
                     break;
                 case "Date":
-                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), ListSortDirection.Descending));
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
                     break;
                 case "Taille":
-                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), ListSortDirection.Descending));
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
                     break;
             }
 
@@ -243,7 +255,9 @@ namespace ImageManager.ViewModels
 
         private void onSortExecute(object? parameter)
         {
-            // TODO : tri
+            sortDirection = (ListSortDirection)((int)(sortDirection + 1) % 2);
+            SortDirectionText = (sortDirection == ListSortDirection.Ascending) ? "Asc" : "Desc";
+            ApplySort();
         }
 
         private void onFilterExecute(object? parameter)

@@ -143,13 +143,14 @@
                     Command="{Binding ImportCommand}"
                     Style="{StaticResource PrimaryButtonStyle}" Width="150"/>
             <ComboBox x:Name="SortCombo" Style="{StaticResource SortComboStyle}"
-                      SelectedItem="{Binding SelectedSortOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                      SelectedValuePath="Content"
+                      SelectedValue="{Binding SelectedSortOption, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <ComboBoxItem Content="Name"/>
                 <ComboBoxItem Content="Date"/>
                 <ComboBoxItem Content="Size"/>
             </ComboBox>
             <ToggleButton x:Name="AscToggle" 
-                          Content="Asc"
+                          Content="{Binding SortDirectionText}"
                           Command="{Binding SortCommand}"/>
         </StackPanel>
 
