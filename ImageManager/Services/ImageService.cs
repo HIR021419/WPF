@@ -32,6 +32,10 @@ namespace ImageManager.Services
 
                 if (db.Images.Any(i => i.Path == img.Path)) continue;
 
+
+                using var imageSharp = SixLabors.ImageSharp.Image.Load(file.FullName);
+                img.Size = imageSharp.Width * imageSharp.Height;
+
                 try
                 {
                     var directories = ImageMetadataReader.ReadMetadata(file.OpenRead());

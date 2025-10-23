@@ -30,6 +30,7 @@ namespace ImageManager.Migrations
                     FocalLength = table.Column<int>(type: "INTEGER", nullable: true),
                     FocalNumber = table.Column<double>(type: "REAL", nullable: true),
                     EditingSoftware = table.Column<string>(type: "TEXT", nullable: true),
+                    Size = table.Column<int>(type: "INTEGER", nullable: true),
                     Photographer = table.Column<string>(type: "TEXT", nullable: true),
                     Copyright = table.Column<string>(type: "TEXT", nullable: true),
                     License = table.Column<string>(type: "TEXT", nullable: true),

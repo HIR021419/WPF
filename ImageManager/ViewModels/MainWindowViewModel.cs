@@ -243,15 +243,14 @@ namespace ImageManager.ViewModels
                 case "Date":
                     ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
                     break;
-                case "Taille":
-                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Date), sortDirection));
+                case "Size":
+                    ImagesView.SortDescriptions.Add(new SortDescription(nameof(Models.Image.Size), sortDirection));
                     break;
             }
         }
 
         private void ApplyFilter()
         {
-            // On enlève les anciens filtres
             ImagesView.Filter = null;
             ImagesView.Filter = (item) =>
             {
