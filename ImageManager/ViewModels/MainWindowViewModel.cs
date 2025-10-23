@@ -40,6 +40,7 @@ namespace ImageManager.ViewModels
         private ICommand _addTagCommand = null!;
         private ICommand _removeTagCommand = null!;
         private ICommand _saveChangesCommand = null!;
+        private ICommand _searchCommand = null!;
         #endregion
 
         #region getter / setter
@@ -78,14 +79,15 @@ namespace ImageManager.ViewModels
                 {
                     _searchPattern = value;
 
-                    ICollectionView myView = CollectionViewSource.GetDefaultView(Images);
+                    // Enables the automatic search refresh when typing in the search bar
+                    /*ICollectionView myView = CollectionViewSource.GetDefaultView(Images);
                     myView.Filter = (item) =>
                     {
                         if (item is not Models.Image img) return false;
 
                         return (img.Title?.Contains(value, StringComparison.OrdinalIgnoreCase) == true)
                                || img.FileName.Contains(value, StringComparison.OrdinalIgnoreCase);
-                    };
+                    };*/
 
                     OnPropertyChanged(nameof(SearchPattern));
                 }
@@ -192,6 +194,11 @@ namespace ImageManager.ViewModels
             get => _saveChangesCommand;
             set => _saveChangesCommand = value;
         }
+        public ICommand SearchCommand
+        {
+            get => _searchCommand;
+            set => _searchCommand = value;
+        }
         #endregion
 
         public ICollectionView ImagesView { get; }
@@ -226,6 +233,7 @@ namespace ImageManager.ViewModels
             AddTagCommand = new RelayCommand(OnAddTagExecute, CanExecuteOnSelectedImage);
             RemoveTagCommand = new RelayCommand(OnRemoveTagExecute, CanExecuteOnSelectedImage);
             SaveChangesCommand = new RelayCommand(OnSaveChangesExecute);
+            SearchCommand = new RelayCommand(_ => ApplyFilter());
 
             ImagesView = CollectionViewSource.GetDefaultView(Images);
             ApplySort();
@@ -251,21 +259,44 @@ namespace ImageManager.ViewModels
 
         private void ApplyFilter()
         {
-            ImagesView.Filter = null;
-            ImagesView.Filter = (item) =>
-            {
-                if (item is not Models.Image image)
-                    return false;
+            var terms = (SearchPattern ?? string.Empty)
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                string extension = System.IO.Path.GetExtension(image.FileName)?.ToLower();
-                return SelectedFilterOption switch
+            ImagesView.Filter = item =>
+            {
+                if (item is not Models.Image image) return false;
+
+                string ext = System.IO.Path.GetExtension(image.FileName)?.ToLowerInvariant() ?? "";
+                bool extOk = SelectedFilterOption switch
                 {
                     "All" => true,
-                    "Jpg" => extension == ".jpg" || extension == ".jpeg",
-                    "Png" => extension == ".png",
-                    "Bmp" => extension == ".bmp",
+                    "Jpg" => ext == ".jpg" || ext == ".jpeg",
+                    "Png" => ext == ".png",
+                    "Bmp" => ext == ".bmp",
                     _ => true
                 };
+                if (!extOk) return false;
+
+                if (terms.Length == 0) return true;
+
+                string name = image.FileName ?? "";
+                string title = image.Title ?? "";
+                var tagNames = image.Tags?.Select(t => t.Name) ?? Enumerable.Empty<string>();
+
+                bool AllTermsMatch(string s) =>
+                    terms.All(t => s?.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                foreach (var term in terms)
+                {
+                    bool match =
+                        (name?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                        (title?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                        tagNames.Any(tag => tag?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
+
+                    if (!match) return false;
+                }
+
+                return true;
             };
 
             ImagesView.Refresh();
