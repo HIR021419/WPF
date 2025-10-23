@@ -1,18 +1,13 @@
 ﻿using ImageManager.Data;
 using ImageManager.Services;
 using ImageManager.Views;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.DirectoryServices;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -26,10 +21,10 @@ namespace ImageManager.ViewModels
         private ObservableCollection<Models.Image> _images = null!;
         private Models.Image? _selectedImage = null;
         private string _searchPattern = "";
-        private ObservableCollection<Models.Tag> _tages = null!;
-        private string _selectedSortOption= "Name";
+        private string _selectedSortOption = "Name";
         ListSortDirection sortDirection = ListSortDirection.Ascending;
         private string _sortDirectionText = "Asc";
+        private string _newTagText = "";
         #endregion
 
         #region commands
@@ -37,7 +32,6 @@ namespace ImageManager.ViewModels
         private ICommand _rotateCommand = null!;
         private ICommand _viewImageCommand = null!;
         private ICommand _sortCommand = null!;
-        private ICommand _filterCommand = null!;
         private ICommand _deleteImageCommand = null!;
         private ICommand _addTagCommand = null!;
         private ICommand _removeTagCommand = null!;
@@ -57,6 +51,7 @@ namespace ImageManager.ViewModels
                 }
             }
         }
+
         public Models.Image? SelectedImage
         {
             get => _selectedImage;
@@ -72,24 +67,22 @@ namespace ImageManager.ViewModels
 
         public string SearchPattern
         {
-            get { return _searchPattern; }
+            get => _searchPattern;
             set
             {
                 if (_searchPattern != value)
                 {
                     _searchPattern = value;
-                    System.ComponentModel.ICollectionView myView = CollectionViewSource.GetDefaultView(Images);
+
+                    ICollectionView myView = CollectionViewSource.GetDefaultView(Images);
                     myView.Filter = (item) =>
                     {
-                        if (item as Models.Image == null) return false;
+                        if (item is not Models.Image img) return false;
 
-                        Models.Image ImageView = (Models.Image)item;
-                        if (ImageView.Title?.Contains(value) == true ||
-                            ImageView.FileName.Contains(value))
-                            return true;
-
-                        return false;
+                        return (img.Title?.Contains(value, StringComparison.OrdinalIgnoreCase) == true)
+                               || img.FileName.Contains(value, StringComparison.OrdinalIgnoreCase);
                     };
+
                     OnPropertyChanged(nameof(SearchPattern));
                 }
             }
@@ -97,10 +90,9 @@ namespace ImageManager.ViewModels
 
         public ObservableCollection<Models.Image> Images
         {
-            get { return _images; }
+            get => _images;
             set
             {
-
                 if (_images != value)
                 {
                     _images = value;
@@ -123,94 +115,87 @@ namespace ImageManager.ViewModels
             }
         }
 
-        public ObservableCollection<Models.Tag> Tags
-        {
-            get { return _tages; }
-            set
-            {
-                if (_tages != value)
-                {
-                    _tages = value;
-                    OnPropertyChanged(nameof(Tags));
-                }
-            }
-        }
-
         public ICommand ImportCommand
         {
-            get { return _importCommand; }
-            set { _importCommand = value; }
+            get => _importCommand;
+            set => _importCommand = value;
         }
 
         public ICommand RotateCommand
         {
-            get { return _rotateCommand; }
-            set { _rotateCommand = value; }
+            get => _rotateCommand;
+            set => _rotateCommand = value;
         }
 
         public ICommand ViewImageCommand
         {
-            get { return _viewImageCommand; }
-            set { _viewImageCommand = value; }
+            get => _viewImageCommand;
+            set => _viewImageCommand = value;
         }
 
         public ICommand SortCommand
         {
-            get { return _sortCommand; }
-            set { _sortCommand = value; }
-        }
-
-        public ICommand FilterCommand
-        {
-            get { return _filterCommand; }
-            set { _filterCommand = value; }
+            get => _sortCommand;
+            set => _sortCommand = value;
         }
 
         public ICommand DeleteImageCommand
         {
-            get { return _deleteImageCommand; }
-            set { _deleteImageCommand = value; }
+            get => _deleteImageCommand;
+            set => _deleteImageCommand = value;
         }
 
         public ICommand AddTagCommand
         {
-            get { return _addTagCommand; }
-            set { _addTagCommand = value; }
+            get => _addTagCommand;
+            set => _addTagCommand = value;
         }
 
         public ICommand RemoveTagCommand
         {
-            get { return _removeTagCommand; }
-            set { _removeTagCommand = value; }
+            get => _removeTagCommand;
+            set => _removeTagCommand = value;
         }
 
         public ICommand SaveChangesCommand
         {
-            get { return _saveChangesCommand; }
-            set { _saveChangesCommand = value; }
+            get => _saveChangesCommand;
+            set => _saveChangesCommand = value;
         }
         #endregion
 
         public ICollectionView ImagesView { get; }
 
+        public string NewTagText
+        {
+            get => _newTagText;
+            set
+            {
+                if (_newTagText != value)
+                {
+                    _newTagText = value;
+                    OnPropertyChanged(nameof(NewTagText));
+                }
+            }
+        }
+
         public MainWindowViewModel() : base()
         {
             base.DisplayName = "ImageManager";
             _db = new ImageDbContext();
-            _db.Database.EnsureCreated();
+            _db.Database.Migrate();
             _svc = new ImageService(_db);
+
             Images = new(_svc.LoadFromDatabase());
-            Tags = new(_db.Tags);
 
             ImportCommand = new RelayCommand(OnImportExecute);
             RotateCommand = new RelayCommand(OnRotateExecute, CanExecuteOnSelectedImage);
             ViewImageCommand = new RelayCommand(OnViewImageExecute, CanExecuteOnSelectedImage);
-            SortCommand = new RelayCommand(onSortExecute);
-            FilterCommand = new RelayCommand(onFilterExecute);
-            DeleteImageCommand = new RelayCommand(onDeleteImageExecute, CanExecuteOnSelectedImage);
-            AddTagCommand = new RelayCommand(onAddTagExecute, CanExecuteOnSelectedImage);
-            RemoveTagCommand = new RelayCommand(onRemoveTagExecute, CanExecuteOnSelectedImage);
-            SaveChangesCommand = new RelayCommand(onSaveChangesExecute);
+            SortCommand = new RelayCommand(OnSortExecute);
+            DeleteImageCommand = new RelayCommand(OnDeleteImageExecute, CanExecuteOnSelectedImage);
+            AddTagCommand = new RelayCommand(OnAddTagExecute, CanExecuteOnSelectedImage);
+            RemoveTagCommand = new RelayCommand(OnRemoveTagExecute, CanExecuteOnSelectedImage);
+            SaveChangesCommand = new RelayCommand(OnSaveChangesExecute);
 
             ImagesView = CollectionViewSource.GetDefaultView(Images);
             ApplySort();
@@ -246,33 +231,18 @@ namespace ImageManager.ViewModels
         private void OnViewImageExecute(object? parameter)
         {
             if (SelectedImage == null) return;
-            ImageViewer imageViewer = new Views.ImageViewer();
-            ImageViewerViewModel imageViewerViemModel = new(SelectedImage, Images.ToList());
-            imageViewer.DataContext = imageViewerViemModel;
+            var imageViewer = new Views.ImageViewer();
+            var imageViewerViewModel = new ImageViewerViewModel(SelectedImage, Images.ToList());
+            imageViewer.DataContext = imageViewerViewModel;
             imageViewer.InitializeComponent();
             imageViewer.Show();
         }
 
-        private void onSortExecute(object? parameter)
+        private void OnSortExecute(object? parameter)
         {
             sortDirection = (ListSortDirection)((int)(sortDirection + 1) % 2);
             SortDirectionText = (sortDirection == ListSortDirection.Ascending) ? "Asc" : "Desc";
             ApplySort();
-        }
-
-        private void onFilterExecute(object? parameter)
-        {
-            // TODO : filtre
-        }
-
-        private void onTagManagementExecute(object? parameter)
-        {
-            // TODO : gestion des tags
-        }
-
-        private void onTagFilterChanged(object? parameter)
-        {
-            // TODO : filtre par tag
         }
 
         private void OnRotateExecute(object? parameter)
@@ -283,7 +253,7 @@ namespace ImageManager.ViewModels
             OnPropertyChanged(nameof(Images));
         }
 
-        private void onDeleteImageExecute(object obj)
+        private void OnDeleteImageExecute(object? obj)
         {
             if (SelectedImage == null) return;
             _svc.DeleteImage(SelectedImage);
@@ -292,24 +262,38 @@ namespace ImageManager.ViewModels
             OnPropertyChanged(nameof(Images));
         }
 
-        private void onAddTagExecute(object obj)
+        private void OnAddTagExecute(object? obj)
         {
-            throw new NotImplementedException();
+            if (SelectedImage == null) return;
+            var text = (NewTagText ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            if (SelectedImage.Tags.Any(t => t.Name.Equals(text, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var tag = new Models.Tag { Name = text, ImageId = SelectedImage.Id, Image = SelectedImage };
+
+            _db.Tags.Add(tag);
+            _db.SaveChanges();
+
+            NewTagText = "";
         }
 
-        private void onRemoveTagExecute(object obj)
+        private void OnRemoveTagExecute(object? obj)
         {
-            throw new NotImplementedException();
+            if (SelectedImage == null || obj is not Models.Tag tag) return;
+
+            _db.Tags.Remove(tag);
+            _db.SaveChanges();
+
+            SelectedImage.Tags.Remove(tag);
         }
 
-        private void onSaveChangesExecute(object obj)
+        private void OnSaveChangesExecute(object? obj)
         {
-            throw new NotImplementedException();
+            _db.SaveChanges();
         }
 
-        private bool CanExecuteOnSelectedImage(object? parameter)
-        {
-            return SelectedImage != null;
-        }
+        private bool CanExecuteOnSelectedImage(object? parameter) => SelectedImage != null;
     }
 }

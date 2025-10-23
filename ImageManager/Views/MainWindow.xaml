@@ -233,6 +233,90 @@
                              Width="100"
                             />
                 </StackPanel>
+                <!-- Tags -->
+                <Border Background="#2D2D30"
+        CornerRadius="6"
+        Padding="10"
+        Margin="10,20,10,0"
+        BorderThickness="1"
+        BorderBrush="#3C3C3C">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.25" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+
+                    <StackPanel>
+                        <TextBlock Text="Tags"
+               FontWeight="SemiBold"
+               FontSize="14"
+               Foreground="White"
+               Margin="0,0,0,8"/>
+
+                        <DockPanel LastChildFill="False">
+                            <TextBox Width="200"
+               Margin="0,0,8,0"
+               Style="{StaticResource SearchBoxStyle}"
+               Background="#1E1E1E"
+               Foreground="White"
+               BorderBrush="#3C3C3C"
+               Text="{Binding NewTagText, UpdateSourceTrigger=PropertyChanged}"/>
+
+                            <Button Content="Add"
+              Command="{Binding AddTagCommand}"
+              Style="{StaticResource PrimaryButtonStyle}"
+              Width="60" Height="30"/>
+                        </DockPanel>
+
+                        <ItemsControl ItemsSource="{Binding SelectedImage.Tags}" Margin="0,10,0,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="#3A3D41"
+                  CornerRadius="16"
+                  Margin="4,4,0,0"
+                  Padding="8,3"
+                  VerticalAlignment="Center">
+                                        <DockPanel LastChildFill="False">
+                                            <TextBlock Text="{Binding Name}"
+                         Foreground="White"
+                         VerticalAlignment="Center"
+                         Margin="0,0,4,0"/>
+                                            <Button Content="×"
+                      Width="20" Height="20"
+                      Background="Transparent"
+                      Foreground="#CCCCCC"
+                      BorderThickness="0"
+                      Cursor="Hand"
+                      Command="{Binding DataContext.RemoveTagCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                      CommandParameter="{Binding}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Foreground" Value="#FF5252"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </Grid>
     </DockPanel>

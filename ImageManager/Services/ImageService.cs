@@ -3,10 +3,11 @@ using ImageManager.Models;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Processing;
+using System.IO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ImageManager.Services
 {
@@ -139,6 +140,29 @@ namespace ImageManager.Services
                 System.Diagnostics.Debug.WriteLine($"Error rotating {image.Path}: {ex.Message}");
                 return false;
             }
+        }
+        public Models.Tag? AddTagToImage(Models.Image image, string name)
+        {
+            var text = (name ?? "").Trim();
+            if (string.IsNullOrWhiteSpace(text)) return null;
+
+            if (image.Tags.Any(t => t.Name.Equals(text, StringComparison.OrdinalIgnoreCase)))
+                return image.Tags.First(t => t.Name.Equals(text, StringComparison.OrdinalIgnoreCase));
+
+            var tag = new Models.Tag { Name = text, ImageId = image.Id, Image = image };
+            db.Tags.Add(tag);
+            db.SaveChanges();
+
+            image.Tags.Add(tag);
+            return tag;
+        }
+
+        public void RemoveTag(Models.Tag tag)
+        {
+            db.Tags.Remove(tag);
+            db.SaveChanges();
+
+            tag.Image?.Tags?.Remove(tag);
         }
     }
 }

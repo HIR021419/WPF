@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace ImageManager.Models
 {
@@ -37,7 +38,7 @@ namespace ImageManager.Models
         }
 
 
-        public virtual List<Tag> Tags { get; set; } = new();
+        public virtual ObservableCollection<Tag> Tags { get; set; } = new();
         public double Rotation
         {
             get => _rotation;

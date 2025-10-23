@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ImageManager.Migrations
 {
     [DbContext(typeof(ImageDbContext))]
-    [Migration("20251021194947_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251023163245_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,31 +102,16 @@ namespace ImageManager.Migrations
                     b.Property<Guid>("ImageId")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ValueId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
-
-                    b.HasIndex("ValueId");
-
-                    b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("ImageManager.Models.TagValue", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TagValues");
+                    b.HasIndex("ImageId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("ImageManager.Models.Tag", b =>
@@ -137,15 +122,7 @@ namespace ImageManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ImageManager.Models.TagValue", "Value")
-                        .WithMany()
-                        .HasForeignKey("ValueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Image");
-
-                    b.Navigation("Value");
                 });
 
             modelBuilder.Entity("ImageManager.Models.Image", b =>

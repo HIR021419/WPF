@@ -3,6 +3,7 @@ using System;
 using ImageManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ImageManager.Migrations
 {
     [DbContext(typeof(ImageDbContext))]
-    partial class ImageDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023154554_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
@@ -99,16 +102,31 @@ namespace ImageManager.Migrations
                     b.Property<Guid>("ImageId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Name")
+                    b.Property<Guid>("ValueId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
+
+                    b.HasIndex("ValueId");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("ImageManager.Models.TagValue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId", "Name")
-                        .IsUnique();
-
-                    b.ToTable("Tags");
+                    b.ToTable("TagValues");
                 });
 
             modelBuilder.Entity("ImageManager.Models.Tag", b =>
@@ -119,7 +137,15 @@ namespace ImageManager.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ImageManager.Models.TagValue", "Value")
+                        .WithMany()
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Image");
+
+                    b.Navigation("Value");
                 });
 
             modelBuilder.Entity("ImageManager.Models.Image", b =>
