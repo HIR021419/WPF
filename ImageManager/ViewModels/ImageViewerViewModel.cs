@@ -17,15 +17,27 @@ namespace ImageManager.ViewModels
         private readonly List<Models.Image> _images;
         private bool _closeSignal = false;
         private int _currentIndex;
-        private Timer? _slideshowTimer;
+        private DispatcherTimer? _slideshowTimer;
         private bool _isPlaying = false;
+        private string _slideshowButtonText = "▶️ Play";
         #endregion
 
         #region commands
         public ICommand _exitCommand = null!;
+        public ICommand ToggleSlideshowCommand { get; set; } = null!;
         #endregion
 
         #region getter / setter
+        public string SlideshowButtonText
+        {
+            get => _slideshowButtonText;
+            set
+            {
+                _slideshowButtonText = value;
+                OnPropertyChanged(nameof(SlideshowButtonText));
+            }
+        }
+
         public bool CloseSignal
         {
             get { return _closeSignal; }
@@ -63,6 +75,15 @@ namespace ImageManager.ViewModels
             _currentIndex = _images.FindIndex(i => i.Path == current.Path);
 
             ExitCommand = new RelayCommand(Close);
+            ToggleSlideshowCommand = new RelayCommand(_ => ToggleSlideshow());
+        }
+
+        private void ToggleSlideshow()
+        {
+            if (_isPlaying)
+                StopSlideshow();
+            else
+                StartSlideshow();
         }
 
         private void Close(object sender)
@@ -71,26 +92,27 @@ namespace ImageManager.ViewModels
             CloseSignal = true;
         }
 
-        private void SlideshowButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_isPlaying)
-                StopSlideshow();
-            else
-                StartSlideshow();
-        }
-
         private void StartSlideshow()
         {
             _isPlaying = true;
-            //SlideshowButton.Content = "⏸️";
-            //_slideshowTimer = new Timer((s) => Dispatcher.Invoke(NextImage), null, 0, 3000);
+            SlideshowButtonText = "⏸️ Pause";
+
+            _slideshowTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(3)
+            };
+            _slideshowTimer.Tick += (s, e) => NextImage();
+            _slideshowTimer.Start();
+
+            NextImage();
         }
 
         private void StopSlideshow()
         {
             _isPlaying = false;
-            //SlideshowButton.Content = "▶️";
-            _slideshowTimer?.Dispose();
+            SlideshowButtonText = "▶️ Play";
+
+            _slideshowTimer?.Stop();
             _slideshowTimer = null;
         }
 
@@ -99,33 +121,19 @@ namespace ImageManager.ViewModels
             if (_images == null || !_images.Any()) return;
 
             _currentIndex = (_currentIndex + 1) % _images.Count;
-            var next = _images[_currentIndex];
+            OnPropertyChanged(nameof(CurrentImage));
 
-            FadeTransition(next);
-        }
-
-        private void FadeTransition(Models.Image next)
-        {
-            var fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(350));
-            fadeOut.FillBehavior = FillBehavior.Stop;
-            fadeOut.Completed += (s, e) =>
+            // Animation fade-in
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                /*
-                Dispatcher.Invoke(() =>
-                {
-                    //DataContext = next;
-                    //FullImage.Opacity = 0;
-                    var fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(350));
-                    fadeIn.FillBehavior = FillBehavior.Stop;
-                    fadeIn.Completed += (s2, e2) =>
-                    {
-                        //FullImage.Opacity = 1;
-                    };
-                    //FullImage.BeginAnimation(UIElement.OpacityProperty, fadeIn);
-                });*/
-            };
+                var window = Application.Current.Windows.OfType<Window>()
+                    .FirstOrDefault(w => w is Views.ImageViewer) as Views.ImageViewer;
+                if (window == null) return;
 
-            //FullImage.BeginAnimation(UIElement.OpacityProperty, fadeOut);
+                var sb = (Storyboard)window.Resources["FadeTransitionStoryboard"];
+                Storyboard.SetTarget(sb, window.FullImage);
+                sb.Begin();
+            });
         }
     }
 }

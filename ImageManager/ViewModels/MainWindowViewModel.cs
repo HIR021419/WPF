@@ -384,7 +384,7 @@ namespace ImageManager.ViewModels
 
             SelectedImage.Tags.Remove(tag);
         }
-
+        
         private void OnSaveChangesExecute(object? obj)
         {
             _db.SaveChanges();

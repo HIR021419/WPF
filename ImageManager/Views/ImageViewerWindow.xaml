@@ -47,25 +47,38 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-    </Window.Resources>
-    
-    
 
-    <Grid Style="{StaticResource StyleMainGrid}">
+        <Storyboard x:Key="FadeTransitionStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0" To="1"
+                             Duration="0:0:0.5"
+                             FillBehavior="HoldEnd"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid x:Name="RootGrid" Style="{StaticResource StyleMainGrid}">
         <Image x:Name="FullImage"
                Source="{Binding CurrentImage.Path, Converter={StaticResource ImageConverter}}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
                Opacity="1"/>
-        <Button x:Name="SlideshowButton"
-                Content="Exit"
-                Width="80"
-                Height="40"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="20"
-                Style="{StaticResource PrimaryButtonStyle}"
-                Command="{Binding ExitCommand}"/>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="20">
+            <Button Content="{Binding SlideshowButtonText}"
+                    Command="{Binding ToggleSlideshowCommand}"
+                    Width="80"
+                    Height="40"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Margin="10,0"/>
+            <Button Content="Exit"
+                    Command="{Binding ExitCommand}"
+                    Width="80"
+                    Height="40"
+                    Style="{StaticResource PrimaryButtonStyle}"/>
+        </StackPanel>
     </Grid>
 </Window>
